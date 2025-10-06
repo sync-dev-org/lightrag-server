@@ -1,0 +1,18 @@
+model_list:
+  - model_name: gpt-oss-120b-cerebras
+    litellm_params:
+      model: openrouter/openai/gpt-oss-120b
+      api_key: os.environ/OPENROUTER_API_KEY
+      api_base: https://openrouter.ai/api/v1
+      route: cerebras
+      provider:
+        only: ["cerebras"]
+        allow_fallbacks: false
+  - model_name: text-embedding-3-small
+    litellm_params:
+      model: openai/text-embedding-3-small
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: rerank-v3.5
+    litellm_params:
+      model: cohere/rerank-v3.5
+      api_key: os.environ/COHERE_API_KEY
