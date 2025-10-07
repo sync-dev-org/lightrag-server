@@ -10,7 +10,7 @@ requires-python = ">=3.12"
 dependencies = [
     "faiss-cpu>=1.12.0",
     "lightrag-hku[api]>=1.4.9",
-    "litellm>=1.77.5",
+    "litellm[proxy]>=1.77.5",
 ]
 
 [build-system]

@@ -57,7 +57,7 @@ RERANK_BINDING_HOST=http://127.0.0.1:${LITELLM_PORT:-4000}/rerank
 ENABLE_LLM_CACHE_FOR_EXTRACT=true
 
 ### Document processing output language: English, Chinese, French, German ...
-SUMMARY_LANGUAGE=English
+SUMMARY_LANGUAGE=Japanese
 
 ### Entity types that the LLM will attempt to recognize
 # ENTITY_TYPES='["Person", "Creature", "Organization", "Location", "Event", "Concept", "Method", "Content", "Data", "Artifact", "NaturalObject"]'
@@ -74,7 +74,7 @@ MAX_ASYNC=8
 ### Number of parallel processing documents(between 2~10, MAX_ASYNC/3 is recommended)
 MAX_PARALLEL_INSERT=4
 ### Max concurrency requests for Embedding
-EMBEDDING_FUNC_MAX_ASYNC=8
+EMBEDDING_FUNC_MAX_ASYNC=4
 ### Num of chunks send to Embedding in single request
 EMBEDDING_BATCH_NUM=10
 

@@ -78,8 +78,8 @@ WORKDIR /workspace
 RUN touch ~/.bashrc && \
     curl -LsSf https://astral.sh/uv/install.sh | sh
 
-RUN mkdir -p /workspace/src/nakahara_lightrag
-RUN touch /workspace/src/nakahara_lightrag/__init__.py
+RUN mkdir -p /workspace/src/lightrag_server
+RUN touch /workspace/src/lightrag_server/__init__.py
 
 ENV PATH="/root/.local/bin:${PATH}"
 ENV UV_LINK_MODE=copy

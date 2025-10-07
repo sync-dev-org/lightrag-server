@@ -95,3 +95,8 @@ uv.lock
 # LiteLLM
 litellm_uuid.txt
 .litellm.cache
+
+inputs/*
+!inputs/__placeholder__
+rag_storage/*
+!rag_storage/__placeholder__
