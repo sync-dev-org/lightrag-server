@@ -4,26 +4,6 @@
 
 [LightRAG](https://github.com/HKUDS/LightRAG)フレームワークをベースに、一定の設定を行い、簡単に起動できるようにDockerコンテナ化されたRAG（Retrieval-Augmented Generation）サーバーです。
 
-### 主な設定内容
-
-- **高速処理**: Cerebras環境で動作するOSS-GPT-120bモデルによる超高速な文書処理
-- **日本語対応**: 主に日本語での文書処理に対応
-- **柔軟な統合**: LiteLLMを介した様々なLLMプロバイダーとの統合
-- **Docker対応**: コンテナ化による簡単なデプロイと環境の一貫性
-- **リアルタイム処理**: 非同期処理による効率的な文書インデックス作成
-
-## 技術スタック
-
-- **フレームワーク**: LightRAG (HKU)
-- **言語**: Python 3.12+
-- **LLMインターフェース**: LiteLLM Proxy
-- **ベクトルDB**: Faiss
-- **グラフDB**: NetworkX
-- **埋め込みモデル**: OpenAI text-embedding-3-small
-- **リランキング**: Cohere rerank-v3.5
-- **ビルドツール**: UV (Astral)
-- **コンテナ化**: Docker
-
 ## システム要件
 
 - Docker Desktop または Docker Engine
@@ -54,9 +34,13 @@ OPENAI_API_KEY=your_openai_api_key_here
 OPENROUTER_API_KEY=your_openrouter_api_key_here
 ```
 
+この.envファイルは、Dockerコンテナ起動時に`--env-file`オプションでコンテナの環境変数として読み込まれます。
+
 ### 3. 設定のカスタマイズ
 
-`.settings.lightrag`ファイルで、RAGシステムの詳細な設定が可能です：
+`.settings.lightrag`ファイルで、LightRAGの詳細な設定が可能です：
+ややこしいですが、`.settings.lightrag`はコンテナ起動時に、`-v ${CURRENT_DIR}/.settings.lightrag:/workspace/.env`でマウントされます。これは、環境変数としてではなく、LightRAGの設定ファイルが`.env`というファイル名を要求するからです。
+
 
 - **言語設定**: `SUMMARY_LANGUAGE=Japanese`（日本語処理の場合）
 - **チャンクサイズ**: `CHUNK_SIZE=1500`（文書の分割サイズ）
