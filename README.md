@@ -29,6 +29,7 @@ cp .env.template .env
 `.env`ファイルを編集して、以下のAPIキーを設定：
 
 ```env
+# RERANKを使用する場合、CohereのAPIキーが必要
 COHERE_API_KEY=your_cohere_api_key_here
 OPENAI_API_KEY=your_openai_api_key_here
 OPENROUTER_API_KEY=your_openrouter_api_key_here
@@ -46,6 +47,21 @@ OPENROUTER_API_KEY=your_openrouter_api_key_here
 - **チャンクサイズ**: `CHUNK_SIZE=1500`（文書の分割サイズ）
 - **並列処理数**: `MAX_PARALLEL_INSERT=4`（同時処理文書数）
 - **埋め込み並列数**: `EMBEDDING_FUNC_MAX_ASYNC=4`
+
+**RERANKを無効にする場合**、`.settings.lightrag`の以下の行を編集：
+
+```.settings.lightrag
+# Set RERANK_MODEL to null to disable reranking
+RERANK_BINDING=null
+
+# Comment out the following lines to disable reranking
+# RERANK_MODEL=rerank-v3.5
+# RERANK_BINDING_HOST=http://127.0.0.1:${LITELLM_PORT:-4000}/rerank
+```
+
+Config例の全文は以下を参照：
+https://github.com/HKUDS/LightRAG/blob/main/env.example
+
 
 ## Dockerを使用した起動方法
 
