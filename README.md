@@ -65,17 +65,10 @@ OPENROUTER_API_KEY=your_openrouter_api_key_here
 
 ## Dockerを使用した起動方法
 
-### Dockerイメージのビルド
+### コンテナの Pull
 
 ```bash
-TAG="$(date +%Y.%-m.%-d)" && \
-REPO="local/lightrag-server" && \
-echo "Building ${REPO}:${TAG}" && \
-docker buildx build \
---platform=linux/amd64 \
---output type=docker,name=${REPO}:${TAG},compression=zstd,oci-mediatypes=true,force-compression=true,compression-level=9 \
-. && \
-docker tag ${REPO}:${TAG} ${REPO}:latest
+docker pull ghcr.io/sync-dev-org/lightrag-server:latest
 ```
 
 ### コンテナの起動
@@ -84,7 +77,7 @@ docker tag ${REPO}:${TAG} ${REPO}:latest
 
 ```bash
 CURRENT_DIR=$(pwd -W) && \
-REPO="local/lightrag-server" && \
+REPO="ghcr.io/sync-dev-org/lightrag-server" && \
 docker run \
 -p 9621:9621 \
 --env-file ${CURRENT_DIR}/.env \
@@ -99,7 +92,7 @@ ${REPO}:latest
 
 ```bash
 CURRENT_DIR=$(pwd) && \
-REPO="local/lightrag-server" && \
+REPO="ghcr.io/sync-dev-org/lightrag-server" && \
 docker run \
 -p 9621:9621 \
 --env-file ${CURRENT_DIR}/.env \
@@ -213,6 +206,19 @@ uv sync
 
 # 開発サーバーの起動
 uv run python -m lightrag_server
+```
+
+### Dockerイメージのビルド
+
+```bash
+TAG="$(date +%Y.%-m.%-d)" && \
+REPO="ghcr.io/sync-dev-org/lightrag-server" && \
+echo "Building ${REPO}:${TAG}" && \
+docker buildx build \
+--platform=linux/amd64 \
+--output type=docker,name=${REPO}:${TAG},compression=zstd,oci-mediatypes=true,force-compression=true,compression-level=9 \
+. && \
+docker tag ${REPO}:${TAG} ${REPO}:latest
 ```
 
 ## ライセンス
