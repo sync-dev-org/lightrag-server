@@ -1,25 +1,71 @@
 # LightRAG Server
 
-## Description
+## 概要
 
-LightRAG Server is a lightweight server application that leverages the LightRAG framework for building retrieval-augmented generation (RAG) systems. It provides an easy-to-use interface for integrating various language models and vector databases to create powerful AI applications.
+[LightRAG](https://github.com/HKUDS/LightRAG)フレームワークをベースに、一定の設定を行い、簡単に起動できるようにDockerコンテナ化されたRAG（Retrieval-Augmented Generation）サーバーです。
 
-This project is built using Python and Docker, ensuring a consistent and portable environment for deployment.
+### 主な設定内容
 
-LiteLLM is used as the primary language model interface, allowing for seamless integration with various LLM providers.
+- **高速処理**: Cerebras環境で動作するOSS-GPT-120bモデルによる超高速な文書処理
+- **日本語対応**: 主に日本語での文書処理に対応
+- **柔軟な統合**: LiteLLMを介した様々なLLMプロバイダーとの統合
+- **Docker対応**: コンテナ化による簡単なデプロイと環境の一貫性
+- **リアルタイム処理**: 非同期処理による効率的な文書インデックス作成
 
-If you want to change the LLM provider, please edit the `.env` file and litellm_config.yaml file.
+## 技術スタック
 
-Now using OpenRouter as the default LLM provider with OSS-GPT-120b running in Cerebras super speed environment, and OpenAI as the embedding provider. Cohere is also supported as a reranking model provider.
+- **フレームワーク**: LightRAG (HKU)
+- **言語**: Python 3.12+
+- **LLMインターフェース**: LiteLLM Proxy
+- **ベクトルDB**: Faiss
+- **グラフDB**: NetworkX
+- **埋め込みモデル**: OpenAI text-embedding-3-small
+- **リランキング**: Cohere rerank-v3.5
+- **ビルドツール**: UV (Astral)
+- **コンテナ化**: Docker
 
-## Prerequisites
+## システム要件
 
-- Docker installed on your machine.
-- A `.env` file in the project root with necessary environment variables (you can copy from `.env.template` and fill in your actual API keys).
+- Docker Desktop または Docker Engine
+- 8GB以上のRAM推奨
+- インターネット接続（APIアクセス用）
 
-## Usage
+## セットアップ
 
-### Build Docker Image
+### 1. リポジトリのクローン
+
+```bash
+docker pull ghcr.io/sync-dev-org/lightrag-server:latest
+```
+
+### 2. 環境変数の設定
+
+`.env.template`をコピーして`.env`ファイルを作成し、必要なAPIキーを設定します：
+
+```bash
+cp .env.template .env
+```
+
+`.env`ファイルを編集して、以下のAPIキーを設定：
+
+```env
+COHERE_API_KEY=your_cohere_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+```
+
+### 3. 設定のカスタマイズ
+
+`.settings.lightrag`ファイルで、RAGシステムの詳細な設定が可能です：
+
+- **言語設定**: `SUMMARY_LANGUAGE=Japanese`（日本語処理の場合）
+- **チャンクサイズ**: `CHUNK_SIZE=1500`（文書の分割サイズ）
+- **並列処理数**: `MAX_PARALLEL_INSERT=4`（同時処理文書数）
+- **埋め込み並列数**: `EMBEDDING_FUNC_MAX_ASYNC=4`
+
+## Dockerを使用した起動方法
+
+### Dockerイメージのビルド
 
 ```bash
 TAG="$(date +%Y.%-m.%-d)" && \
@@ -32,9 +78,9 @@ docker buildx build \
 docker tag ${REPO}:${TAG} ${REPO}:latest
 ```
 
-### Run Docker Container
+### コンテナの起動
 
-for Windows (Git Bash):
+#### Windows (Git Bash)の場合：
 
 ```bash
 CURRENT_DIR=$(pwd -W) && \
@@ -49,7 +95,7 @@ docker run \
 ${REPO}:latest
 ```
 
-for Linux/Mac:
+#### Linux/macOSの場合：
 
 ```bash
 CURRENT_DIR=$(pwd) && \
@@ -64,6 +110,117 @@ docker run \
 ${REPO}:latest
 ```
 
-## License
+## API エンドポイント
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+サーバー起動後、以下のエンドポイントが利用可能になります：
+
+### Web UI
+- **ローカルアクセス**: http://localhost:9621
+- **リモートアクセス**: http://<your-ip-address>:9621
+
+### API ドキュメント
+- **Swagger UI**: http://localhost:9621/docs
+- **ReDoc**: http://localhost:9621/redoc
+
+### 主要なAPIエンドポイント
+
+- `POST /documents/scan` - inputsディレクトリの文書をスキャンしてインデックス作成
+- `POST /documents/upload` - 文書を直接アップロードしてインデックス作成
+- `POST /query` - クエリを実行し、LLMからの応答を取得
+- `POST /query/stream` - ストリーミングでクエリを実行し、LLMからの応答をリアルタイムで取得
+- `POST /query/data` - クエリを実行し、生データ形式で応答を取得
+- `GET /health` - サーバーの健康状態を確認
+
+## 使用方法
+
+### 1. 文書の追加
+
+文書を`inputs/`ディレクトリに配置してから、以下のいずれかの方法でインデックス作成：
+
+- Web UIから「Scan Documents」をクリック
+- APIで `/documents/scan` エンドポイントを呼び出し
+
+### 2. クエリの実行
+
+インデックス作成後、Web UIまたはAPIを使用してクエリを実行：
+
+```bash
+curl -X POST http://localhost:9621/query \
+  -H "Content-Type: application/json" \
+  -d '{　"query": "Who is Nakahara" }'
+```
+
+## プロジェクト構造
+
+```
+lightrag-server/
+├── .env.template        # 環境変数テンプレート
+├── .settings.lightrag   # LightRAG設定ファイル
+├── Dockerfile          # Dockerイメージ定義
+├── LICENSE            # MITライセンス
+├── README.md          # このファイル
+├── inputs/            # 処理する文書を配置するディレクトリ
+├── launch.sh          # 起動スクリプト
+├── litellm_config.yaml # LiteLLM設定
+├── pyproject.toml     # Pythonプロジェクト設定
+└── rag_storage/       # インデックスデータ保存ディレクトリ
+```
+
+## LLMプロバイダーの変更
+
+デフォルトでは以下のプロバイダーを使用：
+
+- **メインLLM**: OpenRouter経由のOSS-GPT-120b (Cerebras)
+- **埋め込み**: OpenAI text-embedding-3-small
+- **リランキング**: Cohere rerank-v3.5
+
+プロバイダーを変更する場合は、`.settings.lightrag`と`litellm_config.yaml`を編集：
+
+```yaml
+model_list:
+  - model_name: your-model-name
+    litellm_params:
+      model: provider/model-path
+      api_key: os.environ/YOUR_API_KEY
+```
+
+## トラブルシューティング
+
+### よくある問題と解決方法
+
+1. **APIキーエラー（401 Unauthorized）**
+   - `.env`ファイルのAPIキーが正しく設定されているか確認
+   - 環境変数に余分な引用符が含まれていないか確認
+
+2. **Rate Limit エラー（429 Too Many Requests）**
+   - `.settings.lightrag`で`EMBEDDING_FUNC_MAX_ASYNC`の値を減らす
+   - `MAX_PARALLEL_INSERT`の値を調整
+
+3. **メモリ不足エラー**
+   - Dockerのメモリ制限を増やす
+   - `CHUNK_SIZE`を小さくする
+
+## 開発
+
+### ローカル開発環境のセットアップ
+
+```bash
+# UV のインストール
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# 依存関係のインストール
+uv sync
+
+# 開発サーバーの起動
+uv run python -m lightrag_server
+```
+
+## ライセンス
+
+このプロジェクトはMITライセンスの下で公開されています。詳細は[LICENSE](LICENSE)ファイルを参照してください。
+
+## 謝辞
+
+- [LightRAG](https://github.com/HKUDS/LightRAG) - HKUDSチーム
+- [LiteLLM](https://github.com/BerriAI/litellm) - BerriAI
+- [UV](https://github.com/astral-sh/uv) - Astral
