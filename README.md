@@ -63,3 +63,7 @@ docker run \
 -v ${CURRENT_DIR}/rag_storage:/workspace/rag_storage \
 ${REPO}:latest
 ```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

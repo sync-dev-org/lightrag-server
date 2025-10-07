@@ -3,6 +3,7 @@ name = "lightrag-server"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
+license = { text = "MIT" }
 authors = [
     { name = "minamik", email = "mia@sync.dev" }
 ]
