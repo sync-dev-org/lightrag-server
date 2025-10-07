@@ -19,13 +19,7 @@ git clone https://github.com/sync-dev-org/lightrag-server.git
 cd lightrag-server
 ```
 
-### 2. Dockerイメージの取得
-
-```bash
-docker pull ghcr.io/sync-dev-org/lightrag-server:latest
-```
-
-### 3. 環境変数の設定
+### 2. 環境変数の設定
 
 `.env.template`をコピーして`.env`ファイルを作成し、必要なAPIキーを設定します：
 
@@ -44,7 +38,7 @@ OPENROUTER_API_KEY=your_openrouter_api_key_here
 
 この.envファイルは、Dockerコンテナ起動時に`--env-file`オプションでコンテナの環境変数として読み込まれます。
 
-### 4. 設定のカスタマイズ
+### 3. 設定のカスタマイズ
 
 `.settings.lightrag`ファイルで、LightRAGの詳細な設定が可能です：
 ややこしいですが、`.settings.lightrag`はコンテナ起動時に、`-v ${CURRENT_DIR}/.settings.lightrag:/workspace/.env`でマウントされます。これは、環境変数としてではなく、LightRAGの設定ファイルが`.env`というファイル名を要求するからです。
